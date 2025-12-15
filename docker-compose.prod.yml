@@ -1,0 +1,12 @@
+# Production override - requires all environment variables to be set
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+version: '3.8'
+
+services:
+  frontend_admin:
+    build:
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:?VITE_API_BASE_URL is required (e.g., https://api.your-domain.com)}
+        VITE_PUSHER_APP_KEY: ${VITE_PUSHER_APP_KEY:?VITE_PUSHER_APP_KEY is required}
+        VITE_PUSHER_APP_CLUSTER: ${VITE_PUSHER_APP_CLUSTER:-eu}

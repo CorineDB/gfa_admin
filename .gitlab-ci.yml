@@ -1,0 +1,117 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_IMAGE: gfa_frontend_admin
+  # DEPLOY_TARGET: "server" (default) or "pc" for local testing
+  DEPLOY_TARGET: "server"
+
+before_script:
+  - 'which sshpass || (apt-get update -y && apt-get install -y sshpass)'
+
+# =============================================================================
+# BUILD STAGE
+# =============================================================================
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - |
+      echo "Building Frontend Admin..."
+      
+      # Load environment from GitLab File variable (ENV_FILE), or fallback to .env.production.example
+      if [ -n "$ENV_FILE" ]; then
+        echo "Loading environment from ENV_FILE..."
+        export $(grep -v '^#' $ENV_FILE | xargs)
+      elif [ -f .env.production.example ]; then
+        echo "Loading environment from .env.production.example..."
+        export $(grep -v '^#' .env.production.example | xargs)
+      fi
+      
+      # Verify required variables
+      if [ -z "$VITE_API_BASE_URL" ]; then
+        echo "ERROR: VITE_API_BASE_URL is not set."
+        echo "Set ENV_FILE in GitLab CI/CD Variables or check .env.production.example"
+        exit 1
+      fi
+      
+      echo "Using VITE_API_BASE_URL: $VITE_API_BASE_URL"
+      
+      docker build \
+        --build-arg VITE_API_BASE_URL=${VITE_API_BASE_URL} \
+        --build-arg VITE_PUSHER_APP_KEY=${VITE_PUSHER_APP_KEY:-} \
+        --build-arg VITE_PUSHER_APP_CLUSTER=${VITE_PUSHER_APP_CLUSTER:-eu} \
+        --build-arg VITE_PUSHER_BASE_URL=${VITE_PUSHER_BASE_URL:-} \
+        -t $DOCKER_IMAGE:latest \
+        .
+      
+      # Save image for deploy stage
+      docker save $DOCKER_IMAGE:latest > image.tar
+  artifacts:
+    paths:
+      - image.tar
+    expire_in: 1 hour
+  only:
+    - main
+
+# =============================================================================
+# DEPLOY STAGE
+# =============================================================================
+
+deploy:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - |
+      # Select SSH credentials based on DEPLOY_TARGET
+      if [ "$DEPLOY_TARGET" = "pc" ]; then
+        echo "🖥️  Deploying to LOCAL PC..."
+        TARGET_HOST="${LOCAL_SSH_HOST}"
+        TARGET_USER="${LOCAL_SSH_USER}"
+        TARGET_PASSWORD="${LOCAL_SSH_PASSWORD}"
+      else
+        echo "🌐 Deploying to PRODUCTION SERVER..."
+        TARGET_HOST="${SSH_HOST}"
+        TARGET_USER="${SSH_USER}"
+        TARGET_PASSWORD="${SSH_PASSWORD}"
+      fi
+      
+      echo "Deploying Frontend Admin to port 3002..."
+      
+      # Transfer image to server
+      sshpass -p "$TARGET_PASSWORD" scp -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        image.tar $TARGET_USER@$TARGET_HOST:/tmp/gfa_admin_image.tar
+      
+      # Deploy on server
+      sshpass -p "$TARGET_PASSWORD" ssh -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        $TARGET_USER@$TARGET_HOST "
+          set -e
+          echo 'Loading Docker image...'
+          docker load < /tmp/gfa_admin_image.tar
+          rm /tmp/gfa_admin_image.tar
+          
+          echo 'Stopping existing container if running...'
+          docker stop gfa_frontend_admin 2>/dev/null || true
+          docker rm gfa_frontend_admin 2>/dev/null || true
+          
+          echo 'Starting new container on port 3002...'
+          docker run -d \
+            --name gfa_frontend_admin \
+            --restart unless-stopped \
+            --network gfa-network \
+            -p 3002:80 \
+            $DOCKER_IMAGE:latest
+          
+          echo 'Frontend Admin deployed successfully on port 3002!'
+        "
+  only:
+    - main
+  when: manual
+  allow_failure: false
