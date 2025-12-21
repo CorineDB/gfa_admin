@@ -6,19 +6,19 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://dms-redevabilite.com}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080}
         VITE_PUSHER_APP_KEY: ${VITE_PUSHER_APP_KEY:-ae75f3a73201ef37c668}
         VITE_PUSHER_APP_CLUSTER: ${VITE_PUSHER_APP_CLUSTER:-eu}
-        VITE_PUSHER_BASE_URL: ${VITE_PUSHER_BASE_URL:-https://dms-redevabilite.com}
-    image: gfa_frontend_admin:prod
-    container_name: gfa_frontend_admin_prod
+        VITE_PUSHER_BASE_URL: ${VITE_PUSHER_BASE_URL:-http://localhost:8080}
+    image: gfa_frontend_admin:local
+    container_name: gfa_frontend_admin_local
     restart: unless-stopped
     ports:
       - "3002:80"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     env_file:
-      - .env.prod
+      - .env.local
 
 networks:
   default:

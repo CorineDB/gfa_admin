@@ -13,10 +13,10 @@ RUN npm install || yarn install
 COPY . .
 
 # Build arguments for environment variables (injected at build time)
-ARG VITE_API_BASE_URL=https://dms-redevabilite.dev
-ARG VITE_PUSHER_APP_KEY=
+ARG VITE_API_BASE_URL=http://192.168.8.102:8080
+ARG VITE_PUSHER_APP_KEY=ae75f3a73201ef37c668
 ARG VITE_PUSHER_APP_CLUSTER=eu
-ARG VITE_PUSHER_BASE_URL=
+ARG VITE_PUSHER_BASE_URL=http://192.168.8.102:8080
 
 # Set environment variables for build
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
