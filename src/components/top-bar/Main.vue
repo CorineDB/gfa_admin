@@ -11,6 +11,8 @@
         </div>
       </div>
     </Notification>
+    <!-- realtime notifications -->
+    <RealtimeNotification />
     <!-- toast notification -->
     <!-- BEGIN: Breadcrumb -->
 
@@ -198,6 +200,7 @@ import { useAuthStore } from "@/stores/modules/authentification";
 import AuthentificationService from "@/services/modules/authentification.service";
 import { useRouter, useRoute } from "vue-router";
 import { API_BASE_URL } from "@/services/configs/environment";
+import RealtimeNotification from "@/components/Notification.vue";
 const router = useRouter();
 const route = useRoute();
 const searchDropdown = ref(false);
