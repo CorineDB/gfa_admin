@@ -18,6 +18,7 @@ import NewPassword from "../views/reset-password/_mails/newPassword.vue";
 import ResetPasswordFromDashboard from "../views/dashboard/resetPasswordFromDashboard.vue";
 
 import programme from "../views/gfa/programme/index.vue";
+import programmeDetail from "../views/gfa/programme/detail.vue";
 import clients from "../views/gfa/clients/index.vue";
 import unite_gestion from "../views/gfa/unite-gestion/index.vue";
 import ResetPasswordConnect from "../views/reset_password/Main.vue";
@@ -41,6 +42,16 @@ const routes = [
         name: "programme",
         component: programme,
         meta: { title: "Programmes" },
+      },
+      {
+        path: "programmes/:id",
+        name: "ProgrammeDetail",
+        component: programmeDetail,
+        meta: {
+          title: "Détail du programme",
+          activeMenu: "programme",
+          breadcrumb: [{ label: "Programmes", to: "/dashboard/programmes" }],
+        },
       },
       {
         path: "clients",

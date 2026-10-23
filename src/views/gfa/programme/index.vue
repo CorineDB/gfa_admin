@@ -386,7 +386,13 @@ export default {
 
   mounted() {
     this.active();
-    this.fetchProgrammes();
+    this.fetchProgrammes().then(() => {
+      const editId = this.$route.query.edit;
+      if (editId) {
+        const programme = this.programmes.find((item) => String(item.id) === String(editId));
+        if (programme) this.editProgramme(programme);
+      }
+    });
     this.getPermission();
     // if(!this.programmeVisible) {
     // this.$router.push('/401-non-autorise')
@@ -425,7 +431,7 @@ export default {
         <div class="p-5">
           <div class="h-40 2xl:h-56 image-fit rounded-md overflow-hidden before:block before:absolute before:w-full before:h-full before:top-0 before:left-0 before:z-10 before:bg-gradient-to-t before:from-black before:to-black/10">
             <div class="absolute bottom-0 text-white px-5 pb-6 z-10">
-              <a href="" class="block font-medium text-base">{{ program.nom }}</a>
+              <router-link :to="{ name: 'ProgrammeDetail', params: { id: program.id } }" class="block font-medium text-base">{{ program.nom }}</router-link>
               <span class="text-white/90 text-xs mt-3">{{ program.description }}</span>
             </div>
           </div>
@@ -446,7 +452,7 @@ export default {
           </div>
         </div>
         <div class="flex justify-center lg:justify-end items-center p-5 border-t border-slate-200/60 dark:border-darkmode-400">
-          <a class="flex items-center text-primary mr-auto" href="javascript:;"> <EyeIcon class="w-4 h-4 mr-1" /> Détail </a>
+          <router-link class="flex items-center text-primary mr-auto" :to="{ name: 'ProgrammeDetail', params: { id: program.id } }"> <EyeIcon class="w-4 h-4 mr-1" /> Détail </router-link>
           <a class="flex items-center mr-3" href="javascript:;" @click="editProgramme(program)"> <CheckSquareIcon class="w-4 h-4 mr-1" /> Modifier </a>
           <a class="flex items-center text-danger" href="javascript:;" @click="deletePrograms(program)"> <Trash2Icon class="w-4 h-4 mr-1" /> Supprimer </a>
         </div>

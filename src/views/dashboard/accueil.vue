@@ -78,7 +78,9 @@
                 <tbody>
                   <tr v-for="programme in recentProgrammes" :key="programme.id" class="intro-x">
                     <td>
-                      <div class="font-medium">{{ programme.nom || "—" }}</div>
+                      <router-link :to="{ name: 'ProgrammeDetail', params: { id: programme.id } }" class="font-medium text-primary hover:underline">
+                        {{ programme.nom || "—" }}
+                      </router-link>
                       <div class="text-slate-500 text-xs truncate max-w-[16rem]">
                         {{ programme.objectifGlobaux || programme.description || "" }}
                       </div>
