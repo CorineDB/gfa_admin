@@ -104,8 +104,8 @@
     </div>
     <!-- END: Modal Toggle -->
     <div class="overflow-x-auto mt-5">
-      <table class="table mt-5">
-        <thead class="table-light">
+      <table class="table table-report -mt-2">
+        <thead>
           <tr>
             <th class="whitespace-nowrap">#</th>
             <th class="whitespace-nowrap">Role</th>
@@ -113,34 +113,39 @@
             <th class="whitespace-nowrap">Date creation</th>
             <!-- <th class="whitespace-nowrap">Date mise à jours</th> -->
             <!-- v-if="$h.getPermission('write.role')" -->
-            <th class="whitespace-nowrap">Actions</th>
+            <th class="whitespace-nowrap text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(data, index) in resultQuery" :key="index">
+          <tr v-if="resultQuery.length === 0">
+            <td colspan="5" class="text-center text-slate-500 py-10">Aucun rôle trouvé.</td>
+          </tr>
+          <tr v-for="(data, index) in resultQuery" :key="index" class="intro-x">
             <td>{{ index + 1 }}</td>
-            <td>{{ data.nom }}</td>
+            <td class="whitespace-nowrap">{{ data.nom }}</td>
             <td>
-              <div class="grid grid-cols-5 gap-1">
-                <span v-for="(permission, index) in data.permissions" :key="index" class="bg-primary text-white rounded-md p-2 text-xs">
+              <div class="flex flex-wrap gap-1">
+                <span v-for="(permission, index) in data.permissions" :key="index" class="bg-primary text-white rounded-md px-2 py-1 text-xs">
                   {{ permission.nom }}
                 </span>
               </div>
             </td>
-            <td>{{ data.created_at }}</td>
+            <td class="whitespace-nowrap">{{ data.created_at }}</td>
             <!-- <td>{{ data.updated_at }}</td> -->
             <!-- v-if="$h.getPermission('write.role')" -->
-            <td class="space-y-3">
-              <Tippy tag="a" href="javascript:;" class="tooltip" content="cliquez pour modifier">
-                <span @click="modifier(index, data)" class="text-blue-500 cursor-pointer">
-                  <EditIcon />
-                </span>
-              </Tippy>
-              <Tippy tag="a" href="javascript:;" class="tooltip" content="cliquez pour supprimer">
-                <span @click="supprimer(index, data)" class="text-red-500 cursor-pointer">
-                  <Trash2Icon />
-                </span>
-              </Tippy>
+            <td class="table-report__action w-32">
+              <div class="flex justify-center items-center space-x-3">
+                <Tippy tag="a" href="javascript:;" class="tooltip" content="cliquez pour modifier">
+                  <span @click="modifier(index, data)" class="text-blue-500 cursor-pointer">
+                    <EditIcon />
+                  </span>
+                </Tippy>
+                <Tippy tag="a" href="javascript:;" class="tooltip" content="cliquez pour supprimer">
+                  <span @click="supprimer(index, data)" class="text-red-500 cursor-pointer">
+                    <Trash2Icon />
+                  </span>
+                </Tippy>
+              </div>
             </td>
           </tr>
         </tbody>

@@ -104,8 +104,8 @@
     <!-- END: Modal Toggle -->
 
     <div class="overflow-x-auto mt-5">
-      <table class="table mt-5">
-        <thead class="table-light">
+      <table class="table table-report -mt-2">
+        <thead>
           <tr>
             <th class="whitespace-nowrap">#</th>
             <th class="whitespace-nowrap">Nom</th>
@@ -115,17 +115,19 @@
             <th class="whitespace-nowrap">Poste</th>
             <th class="whitespace-nowrap">Type utilisateur</th>
             <th class="whitespace-nowrap">Date creation</th>
-            <th class="whitespace-nowrap">Actions</th>
+            <th class="whitespace-nowrap text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(data, index) in resultQuery" :key="index">
+          <tr v-if="resultQuery.length === 0">
+            <td colspan="9" class="text-center text-slate-500 py-10">Aucun utilisateur trouvé.</td>
+          </tr>
+          <tr v-for="(data, index) in resultQuery" :key="index" class="intro-x">
             <td>{{ index + 1 }}</td>
-            <td>{{ data.nom }}</td>
-            <td>{{ data.prenom }}</td>
-
+            <td class="whitespace-nowrap">{{ data.nom }}</td>
+            <td class="whitespace-nowrap">{{ data.prenom }}</td>
             <td>{{ data.email }}</td>
-            <td>{{ data.contact }}</td>
+            <td class="whitespace-nowrap">{{ data.contact }}</td>
             <td :class="data.poste ? 'text-black' : 'text-red-500'" :style="{ color: data.poste ? '#000000' : '#a9aaad', fontStyle: data.poste ? 'normal' : 'italic' }">{{ data.poste ?? "Non défini" }}</td>
             <td>
               <div class="flex flex-wrap gap-1">
@@ -134,25 +136,11 @@
                 </span>
               </div>
             </td>
-
-            <td>{{ data.created_at }}</td>
-            <td v-if="$h.getPermission('write.utilisateur')" class="flex space-x-2 items-center">
-              <Tippy tag="a" href="javascript:;" class="tooltip" content="cliquez pour modifier">
-                <span @click="modifier(index, data)" class="text-blue-500 cursor-pointer">
-                  <EditIcon />
-                </span>
-              </Tippy>
-
-              <Tippy tag="a" href="javascript:;" class="tooltip" content="cliquez pour modifier">
-                <span @click="supprimer(index, data)" class="text-red-500 cursor-pointer">
-                  <Trash2Icon />
-                </span>
-              </Tippy>
-            </td>
-            <td>
-              <div class="flex justify-evenly">
-                <EditIcon @click="openUpdateModal(data)" class="w-4 h-4 mr-3" />
-                <TrashIcon @click="supprimer(index, data)" class="w-4 h-4 mr-3" />
+            <td class="whitespace-nowrap">{{ data.created_at }}</td>
+            <td v-if="$h.getPermission('write.utilisateur')" class="table-report__action w-32">
+              <div class="flex justify-center items-center space-x-3">
+                <EditIcon @click="openUpdateModal(data)" class="w-4 h-4 text-blue-500 cursor-pointer" />
+                <Trash2Icon @click="supprimer(index, data)" class="w-4 h-4 text-red-500 cursor-pointer" />
               </div>
             </td>
           </tr>

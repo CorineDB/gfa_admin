@@ -44,6 +44,11 @@
             </td>
           </tr>
         </tbody>
+        <tbody v-else>
+          <tr>
+            <td colspan="5" class="text-center text-slate-500 py-10">Aucune unité de gestion enregistrée.</td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>

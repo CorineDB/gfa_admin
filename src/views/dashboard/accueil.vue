@@ -66,13 +66,13 @@
               Aucun programme enregistré pour le moment.
             </div>
             <div v-else class="overflow-x-auto">
-              <table class="table">
+              <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th class="whitespace-nowrap">Programme</th>
-                    <th class="whitespace-nowrap">Code</th>
-                    <th class="whitespace-nowrap">Période</th>
-                    <th class="whitespace-nowrap text-right">Budget national</th>
+                    <th class="whitespace-nowrap text-xs font-medium uppercase tracking-wider text-slate-500">Programme</th>
+                    <th class="whitespace-nowrap text-xs font-medium uppercase tracking-wider text-slate-500">Code</th>
+                    <th class="whitespace-nowrap text-xs font-medium uppercase tracking-wider text-slate-500">Période</th>
+                    <th class="whitespace-nowrap text-right text-xs font-medium uppercase tracking-wider text-slate-500">Budget national</th>
                   </tr>
                 </thead>
                 <tbody>

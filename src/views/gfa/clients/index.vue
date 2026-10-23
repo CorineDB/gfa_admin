@@ -35,10 +35,10 @@
     <!-- END: Filtres -->
 
     <!-- BEGIN: Tableau -->
-    <div class="intro-y box mt-5">
+    <div class="intro-y mt-5">
       <div class="overflow-x-auto">
         <table class="table table-report">
-          <thead class="table-light">
+          <thead>
             <tr>
               <th class="whitespace-nowrap">Client</th>
               <th class="whitespace-nowrap">Secteur</th>
@@ -99,7 +99,7 @@
       </div>
 
       <!-- BEGIN: Pagination -->
-      <div v-if="totalPages > 1" class="flex items-center justify-end p-5 border-t border-slate-200/60 dark:border-darkmode-400">
+      <div v-if="totalPages > 1" class="flex items-center justify-end mt-2">
         <button class="btn btn-outline-secondary w-24 mr-2" :disabled="currentPage === 1" @click="currentPage--">
           Précédent
         </button>
