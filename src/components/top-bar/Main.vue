@@ -62,6 +62,23 @@
 
     <!-- BEGIN: Account Menu -->
 
+    <button
+      type="button"
+      class="intro-x relative flex items-center justify-center w-8 h-8 mr-3 rounded-full hover:bg-white/10"
+      title="Notifications non lues"
+      @click="loadUnreadNotifications"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+      <span
+        v-if="unreadCount > 0"
+        class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full"
+      >
+        {{ unreadCount > 99 ? "99+" : unreadCount }}
+      </span>
+    </button>
+
     <Dropdown class="intro-x w-8 h-8">
       <DropdownToggle tag="div" role="button" class="dropdown-toggle image-fit zoom-in">
         <div class="flex items-center justify-center w-8 h-8 bg-blue-400 rounded-full shadow-lg cursor-pointer">
@@ -195,12 +212,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, provide } from "vue";
+import { ref, reactive, onMounted, provide, computed } from "vue";
 import { useAuthStore } from "@/stores/modules/authentification";
 import AuthentificationService from "@/services/modules/authentification.service";
 import { useRouter, useRoute } from "vue-router";
 import { API_BASE_URL } from "@/services/configs/environment";
 import RealtimeNotification from "@/components/Notification.vue";
+import vuexStore from "@/stores/index";
+import NotificationService from "@/services/modules/notification.service.js";
 const router = useRouter();
 const route = useRoute();
 const searchDropdown = ref(false);
@@ -222,8 +241,19 @@ const message = reactive({
 });
 
 const usersProfileImage = ref("");
+const unreadCount = computed(() => vuexStore.getters.getCount);
+
+const loadUnreadNotifications = () => {
+  NotificationService.get()
+    .then((response) => {
+      const datas = response?.data?.data ?? [];
+      vuexStore.commit("updateCounter", Array.isArray(datas) ? datas.length : 0);
+    })
+    .catch(() => {});
+};
 
 onMounted(() => {
+  loadUnreadNotifications();
   const usersInfo = JSON.parse(localStorage.getItem("authenticateUser"));
 
 
