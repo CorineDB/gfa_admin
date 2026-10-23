@@ -164,10 +164,10 @@ export default {
                 this.chargement = false;
                 if (response.data.utilisateur.type == "administrateur") {
                   // this.$toast.success("Connexion réussie")
-                  this.$router.push("/dashboard/programme");
+                  this.$router.push("/dashboard");
                 } else {
                   // this.$toast.success("Connexion réussie")
-                  this.$router.push("/dashboard/projets");
+                  this.$router.push("/dashboard");
                 }
               }
             })

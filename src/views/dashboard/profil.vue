@@ -1,355 +1,294 @@
 <template>
-  <Notification refKey="successNotification" :options="{ duration: 3000, }" class="flex">
-    <CheckCircleIcon v-if="message.type === 'success'" class="text-success" />
-    <div class="ml-4 mr-4">
-      <div :class="{ 'text-red-500 capitalize ': message.type != 'success' }" class="font-medium">{{ message.type }}
-      </div>
-      <div class="text-slate-500 mt-1">
-        {{ message.message }}
-      </div>
+  <div class="py-6">
+    <!-- BEGIN: En-tête -->
+    <div class="intro-y flex items-center mt-2">
+      <h2 class="text-lg font-medium mr-auto">Mon profil</h2>
     </div>
-  </Notification>
-  <div class="intro-y flex items-center mt-8">
-    <h2 class="text-lg font-medium mr-auto">Mettre à jour son profil</h2>
-  </div>
-  <div class="grid grid-cols-12 gap-6">
-    <!-- BEGIN: Profile Menu -->
-    <div class="col-span-12 lg:col-span-4 2xl:col-span-3 flex lg:block flex-col-reverse">
-      <div class="intro-y box mt-5">
-        <div class="relative flex items-center p-5">
-          <div class="w-12 h-12 image-fit">
-            <img alt="Midone Tailwind HTML Admin Template" class="rounded-full" :src="usersProfileImage" />
-          </div>
-          <div class="ml-4 mr-auto">
-            <div class="font-medium text-base">
-              {{ currentUsers.nom }} {{ currentUsers.prenom }}
+    <!-- END: En-tête -->
+
+    <div class="grid grid-cols-12 gap-6 mt-5">
+      <!-- BEGIN: Carte identité -->
+      <div class="intro-y col-span-12 lg:col-span-4">
+        <div class="box p-5">
+          <div class="flex flex-col items-center text-center">
+            <div class="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center bg-primary/10 text-primary">
+              <img v-if="photoUrl" :src="photoUrl" alt="Photo de profil" class="w-full h-full object-cover" />
+              <span v-else class="text-2xl font-semibold uppercase">{{ initiales }}</span>
             </div>
-            <div class="text-slate-500">{{ currentUsers.role }}</div>
+            <div class="font-medium text-lg mt-4">{{ displayName }}</div>
+            <div class="text-slate-500 text-sm mt-0.5">{{ form.email || "—" }}</div>
+            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mt-3">
+              {{ roleLabel }}
+            </span>
           </div>
 
+          <div class="mt-6 pt-5 border-t border-slate-200/60 dark:border-darkmode-400 space-y-4">
+            <router-link to="/dashboard/profil" class="flex items-center text-primary font-medium">
+              <ActivityIcon class="w-4 h-4 mr-2" /> Informations personnelles
+            </router-link>
+            <router-link to="/dashboard/profil/reset-password" class="flex items-center text-slate-600 dark:text-slate-300">
+              <LockIcon class="w-4 h-4 mr-2" /> Changer de mot de passe
+            </router-link>
+          </div>
         </div>
-        <div class="p-5 border-t border-slate-200/60 dark:border-darkmode-400">
-          <a class="flex items-center text-primary font-medium" href="">
-            <ActivityIcon class="w-4 h-4 mr-2" /> Information Personnel
-          </a>
-          <router-link class="flex items-center mt-5" to="/dashboard/resetPassword">
-            <LockIcon class="w-4 h-4 mr-2" /> Changer de mot de passe
-          </router-link>
-        </div>
-      </div>
-    </div>
-    <!-- END: Profile Menu -->
-    <div class="col-span-12 lg:col-span-8 2xl:col-span-9">
-      <!-- BEGIN: Display Information -->
-      <div class="intro-y box lg:mt-5">
-        <div class="flex items-center p-5 border-b border-slate-200/60 dark:border-darkmode-400">
-          <h2 class="font-medium text-base mr-auto">Information profil</h2>
-        </div>
-        <div class="p-5">
-          <div class="flex flex-col-reverse  xl:flex-row">
-            <div class="p-5">
-              <form @submit.prevent="editUserInfo()">
-                <div class="grid grid-cols-12 gap-x-5">
-                  <div class="col-span-12 xl:col-span-6">
 
-                    <div class="mt-3">
-                      <label for="update-profile-form-7" class="form-label">Nom</label>
-                      <input id="update-profile-form-7" type="text" class="form-control" placeholder="Entrée votre nom"
-                        v-model="formData.nom" />
-                    </div>
-                    <div class="mt-3">
-                      <label for="update-profile-form-7" class="form-label">Prénom</label>
-                      <input id="update-profile-form-7" type="text" class="form-control" placeholder="Entrée votre prénom"
-                        v-model="formData.prenoms" />
-                    </div>
-
-
-                  </div>
-                  <div class="col-span-12 xl:col-span-6">
-                    <div class="mt-3">
-                      <label for="update-profile-form-6" class="form-label">Email</label>
-                      <input id="update-profile-form-6" type="text" class="form-control" placeholder="Entrér votre mail"
-                        v-model="formData.email" />
-                    </div>
-                    <div class="mt-3">
-                      <label for="update-profile-form-10" class="form-label">Phone Number</label>
-                      <input id="update-profile-form-10" type="text" class="form-control" placeholder="Input text"
-                        value="+229 XXXXXXXX" disabled />
-                    </div>
-                  </div>
-                </div>
-                <div class="mx-auto cursor-pointer relative mt-5">
-                  <button type="submit" class="btn btn-primary py-3 px-4 w-full custom-bg  xl:mr-3 align-top">
-                    <span class="text-sm font-semibold uppercase" v-if="!chargement2">
-                      Mettre à jour
-                    </span>
-                    <span v-else class="flex justify-center items-center space-x-2">
-                      <span class=" px-4 font-semibold ">
-                        chargement ...
-                      </span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-center animate-spin" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    </span>
-                  </button>
-                </div>
-              </form>
-
+        <!-- BEGIN: Photo -->
+        <div class="box p-5 mt-5">
+          <h2 class="font-medium text-base mb-4">Photo de profil</h2>
+          <div class="flex items-center">
+            <div class="w-16 h-16 rounded-full overflow-hidden flex-none flex items-center justify-center bg-primary/10 text-primary">
+              <img v-if="previewUrl || photoUrl" :src="previewUrl || photoUrl" alt="Aperçu" class="w-full h-full object-cover" />
+              <span v-else class="text-lg font-semibold uppercase">{{ initiales }}</span>
             </div>
-            <div class="w-52 mx-auto xl:mr-0 xl:ml-6">
-              <div
-                class="border-2 border-dashed shadow-sm border-slate-200/60 dark:border-darkmode-400 rounded-md p-5 relative">
-                <div v-if="url == null" class="h-40 relative image-fit cursor-pointer zoom-in mx-auto">
+            <div class="ml-4">
+              <label class="btn btn-outline-secondary cursor-pointer">
+                Choisir une image
+                <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileUpload" />
+              </label>
+              <div class="text-slate-500 text-xs mt-2">JPG ou PNG, 2 Mo maximum.</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-primary w-full mt-4"
+            :disabled="!selectedFile || savingPhoto"
+            @click="savePhoto"
+          >
+            <span v-if="!savingPhoto">Enregistrer la photo</span>
+            <span v-else>Enregistrement...</span>
+          </button>
+        </div>
+        <!-- END: Photo -->
+      </div>
+      <!-- END: Carte identité -->
 
-                  <div class="flex items-center p-2  justify-center w-full h-full bg-blue-400  shadow-lg cursor-pointer">
-                    <!-- <span v-if="store.getInitiale != ''" key="initial store"
-                      class="text-sm font-bold text-white uppercase">
-                      {{ store.getInitiale }} </span> -->
-
-                    <img :src="usersProfileImage" alt="">
-                  </div>
-                  <Tippy tag="div" content="Remove this profile photo?"
-                    class="w-5 h-5 flex items-center justify-center absolute rounded-full text-white bg-danger right-0 top-0 -mr-2 -mt-2">
-                    <xIcon class="w-4 h-4" />
-                  </Tippy>
-
-                </div>
-                <div v-else class="h-40 relative image-fit cursor-pointer zoom-in mx-auto">
-                  <img class="rounded-md" alt="Midone Tailwind HTML Admin Template" :src="url" />
-                  <Tippy tag="div" content="Remove this profile photo?"
-                    class="w-5 h-5 flex items-center justify-center absolute rounded-full text-white bg-danger right-0 top-0 -mr-2 -mt-2">
-                    <xIcon class="w-4 h-4" />
-                  </Tippy>
-                </div>
-
-                <div
-                  class=" text-center   absolute w-full  z-10 top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/5 mt-5">
-                  <label
-                    class=" mx-auto p-1   cursor-pointer hover:btn-primary hover:btn font-bold border border-blue-500 rounded-sm">
-                    Choisir image <input ref="file" v-on:change="handleFileUpload()" type="file" style="display: none;"
-                      required>
-                  </label>
-                </div>
-
-                <div class="mx-auto cursor-pointer relative mt-5">
-                  <button type="submit" @click="saveProfil()"
-                    class="btn btn-primary py-3 px-4 w-full custom-bg  xl:mr-3 align-top">
-                    <span class="text-sm font-semibold uppercase" v-if="!chargement">
-                      Sauvegarder
-                    </span>
-                    <span v-else class="flex justify-center items-center space-x-2">
-                      <span class=" px-4 font-semibold ">
-                        chargement ...
-                      </span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-center animate-spin" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    </span>
-                  </button>
-                </div>
+      <!-- BEGIN: Formulaire -->
+      <div class="intro-y col-span-12 lg:col-span-8">
+        <div class="box">
+          <div class="flex items-center p-5 border-b border-slate-200/60 dark:border-darkmode-400">
+            <h2 class="font-medium text-base mr-auto">Informations personnelles</h2>
+          </div>
+          <form class="p-5" @submit.prevent="saveInfo">
+            <div class="grid grid-cols-12 gap-x-5 gap-y-3">
+              <div class="col-span-12 xl:col-span-6">
+                <label class="form-label" for="profil-nom">Nom</label>
+                <input id="profil-nom" v-model.trim="form.nom" type="text" class="form-control" placeholder="Votre nom" />
+                <p v-if="errors.nom" class="text-red-500 text-xs mt-1">{{ errors.nom }}</p>
+              </div>
+              <div class="col-span-12 xl:col-span-6">
+                <label class="form-label" for="profil-prenom">Prénom</label>
+                <input id="profil-prenom" v-model.trim="form.prenom" type="text" class="form-control" placeholder="Votre prénom" />
+                <p v-if="errors.prenom" class="text-red-500 text-xs mt-1">{{ errors.prenom }}</p>
+              </div>
+              <div class="col-span-12 xl:col-span-6">
+                <label class="form-label" for="profil-email">Email</label>
+                <input id="profil-email" v-model.trim="form.email" type="email" class="form-control" placeholder="Votre email" />
+                <p v-if="errors.email" class="text-red-500 text-xs mt-1">{{ errors.email }}</p>
+              </div>
+              <div class="col-span-12 xl:col-span-6">
+                <label class="form-label" for="profil-contact">Contact</label>
+                <input id="profil-contact" v-model.trim="form.contact" type="text" class="form-control" placeholder="Votre contact" />
+                <p v-if="errors.contact" class="text-red-500 text-xs mt-1">{{ errors.contact }}</p>
+              </div>
+              <div class="col-span-12 xl:col-span-6">
+                <label class="form-label" for="profil-poste">Poste</label>
+                <input id="profil-poste" v-model.trim="form.poste" type="text" class="form-control" placeholder="Votre poste" />
+                <p v-if="errors.poste" class="text-red-500 text-xs mt-1">{{ errors.poste }}</p>
+              </div>
+              <div class="col-span-12 xl:col-span-6">
+                <label class="form-label" for="profil-role">Rôle</label>
+                <input id="profil-role" :value="roleLabel" type="text" class="form-control" disabled />
               </div>
             </div>
-          </div>
+
+            <div class="flex justify-end mt-5">
+              <button type="submit" class="btn btn-primary w-full sm:w-auto" :disabled="savingInfo">
+                <span v-if="!savingInfo">Mettre à jour</span>
+                <span v-else>Enregistrement...</span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-      <!-- END: Display Information -->
-
+      <!-- END: Formulaire -->
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, provide } from "vue";
-import { useAuthStore } from '@/stores/modules/authentification'
+import { computed, onMounted, reactive, ref } from "vue";
+import { toast } from "vue3-toastify";
 import AuthentificationService from "@/services/modules/authentification.service";
-import UsersService from "../../services/modules/user.service";
 import { API_BASE_URL } from "@/services/configs/environment";
 
-
-const store = useAuthStore()
-const currentUsers = reactive({})
-const initial = ref()
-const fullName = ref('')
-const chargement = ref(false)
-const chargement2 = ref(false)
-
-
-const successNotification = ref();
-
-const message = reactive({
-  type: '',
-  message: '',
-})
-
-const formData = reactive({
-  email: '',
-  nom: '',
-  prenoms: '',
-
-})
-
-
-const UserInfo = ref(null)
-
-
-const usersProfileImage = ref('')
-onMounted(() => {
-
-  const usersInfo = JSON.parse(localStorage.getItem('authenticateUser'));
-  UserInfo.value = usersInfo
-
- // usersProfileImage.value = API_BASE_URL + usersInfo.users.profil
-
- 
-
-  if (usersInfo) {
-    currentUsers.id = usersInfo.users.id
-    currentUsers.nom = usersInfo.users.nom
-    currentUsers.prenom = usersInfo.users.prenom
-    currentUsers.role = usersInfo.users.role.nom
-    currentUsers.email = usersInfo.users.email
-    // currentUsers.number = usersInfo.users.entreprise.contact
-    let storeInitial = currentUsers.nom[0] + '' + currentUsers.prenom[0]
-    storeInitial = storeInitial.toUpperCase()
-    initial.value = storeInitial
-    fullName.value = currentUsers.nom + ' ' + currentUsers.prenom
-
-    formData.nom = currentUsers.nom
-    formData.prenoms = currentUsers.prenom
-    formData.email = currentUsers.email
-
-  }
-
- 
-
-})
-
-const file = ref(null)
-const url = ref(null)
-
-const img = ref(null)
-
-const handleFileUpload = async () => {
-
-  img.value = file.value.files[0]
-
-  url.value = URL.createObjectURL(img.value)
-
- 
-}
-
-
-const saveProfil = function() {
-
-  const profileImage = new FormData()
-  profileImage.append('photo', img.value)
-  if (!chargement.value && url.value != null) {
-    chargement.value = true
-
-    AuthentificationService.changeProfil(profileImage).then(response => {
-      chargement.value = false
-
-
-
-      usersProfileImage.value = API_BASE_URL + response.data.data.profil
-
-       
-    
-      UserInfo.value.users.profil = response.data.data.profil
-
-    
-
-      localStorage.setItem('authenticateUser', JSON.stringify(UserInfo.value))
-
-      console.log( localStorage.getItem('bsdInfo') )
-
-
-      message.type = response.data.statut
-      message.message = response.data.message
-      successNotificationToggle()
-      location.reload()
-
-
-
-
-    }).catch(err => {
-
-
-    })
-    
-  }
-
-}
-
-
-const editUserInfo = () => {
-
-  if (!chargement2.value) {
-    chargement2.value = true
-
-  
-
-
-    AuthentificationService.updateUserInfo(currentUsers.id, formData).then(response => {
-     
-      chargement2.value = false
-
-      console.log(response.data)
-
-      message.type = response.data.statut
-      message.message = response.data.message
-      successNotificationToggle()
-    
-
-      currentUsers.nom = formData.nom
-      currentUsers.prenom = formData.prenoms
-      currentUsers.email = formData.email
-
-      currentUsers.initial = currentUsers.nom[0] + '' + currentUsers.prenom[0]
-
-      UserInfo.value.users.nom = currentUsers.nom
-      UserInfo.value.users.prenom = currentUsers.prenom
-      UserInfo.value.users.email = currentUsers.email
-      UserInfo.value.userInitiale = currentUsers.initial
-
-      localStorage.setItem('authenticateUser', JSON.stringify(UserInfo.value));
-      
-
-      // location.reload()
-
-
-    }).catch(err => {
-      chargement2.value = false
-      message.type = err.data.status
-      message.message = err.data.message
-      successNotificationToggle()
-
-    })
-  
-  }
-
-}
-
-
-
-provide("bind[successNotification]", (el) => {
-  // Binding
-  successNotification.value = el;
+const rawUser = ref({});
+const form = reactive({ nom: "", prenom: "", email: "", contact: "", poste: "" });
+const errors = reactive({});
+const photoUrl = ref("");
+const previewUrl = ref("");
+const selectedFile = ref(null);
+const fileInput = ref(null);
+const savingInfo = ref(false);
+const savingPhoto = ref(false);
+
+const user = computed(() => rawUser.value?.users || rawUser.value || {});
+
+const roles = computed(() => {
+  const source = user.value;
+  if (Array.isArray(source.roles)) return source.roles;
+  if (Array.isArray(source.role)) return source.role;
+  if (source.role) return [source.role];
+  return [];
 });
-const successNotificationToggle = () => {
-  // Show notification
-  successNotification.value.showToast();
+
+const roleLabel = computed(() => {
+  const names = roles.value.map((role) => role.nom).filter(Boolean);
+  return names.length ? names.join(", ") : user.value.type || "Utilisateur";
+});
+
+const displayName = computed(() => {
+  const name = [form.nom, form.prenom].filter(Boolean).join(" ");
+  return name || user.value.email || "Utilisateur";
+});
+
+const initiales = computed(() => {
+  const parts = [form.nom, form.prenom].filter(Boolean);
+  if (!parts.length) return "?";
+  return parts.map((part) => part.trim()[0] || "").join("").toUpperCase();
+});
+
+const buildPhotoUrl = (path) => {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path) || path.startsWith("blob:")) return path;
+  return `${API_BASE_URL.replace(/\/$/, "")}/${String(path).replace(/^\//, "")}`;
 };
 
+const serverMessage = (error, fallback) => {
+  const data = error?.response?.data;
+  if (data?.errors) {
+    const first = Object.values(data.errors).flat()[0];
+    if (first) return first;
+  }
+  return data?.message || fallback;
+};
+
+const fillForm = (source) => {
+  form.nom = source.nom || "";
+  form.prenom = source.prenom || source.prenoms || "";
+  form.email = source.email || "";
+  form.contact = source.contact || "";
+  form.poste = source.poste || "";
+};
+
+const persistUser = (updates) => {
+  const raw = JSON.parse(localStorage.getItem("authenticateUser")) || {};
+  const target = raw.users || raw;
+  Object.assign(target, updates);
+  raw.userInitiale = [(target.nom || "")[0], (target.prenom || "")[0]]
+    .filter(Boolean)
+    .join("")
+    .toUpperCase();
+  localStorage.setItem("authenticateUser", JSON.stringify(raw));
+  rawUser.value = raw;
+};
+
+onMounted(() => {
+  const raw = JSON.parse(localStorage.getItem("authenticateUser")) || {};
+  rawUser.value = raw;
+  const source = raw.users || raw;
+  fillForm(source);
+  photoUrl.value = buildPhotoUrl(source.profil);
+});
+
+const validate = () => {
+  Object.keys(errors).forEach((key) => delete errors[key]);
+  if (!form.nom) errors.nom = "Le nom est obligatoire.";
+  if (!form.prenom) errors.prenom = "Le prénom est obligatoire.";
+  if (!form.email) {
+    errors.email = "L'email est obligatoire.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    errors.email = "L'email n'est pas valide.";
+  }
+  return Object.keys(errors).length === 0;
+};
+
+const saveInfo = async () => {
+  if (!validate() || savingInfo.value) return;
+
+  const id = user.value.id;
+  if (!id) {
+    toast.error("Utilisateur introuvable. Reconnectez-vous.");
+    return;
+  }
+
+  savingInfo.value = true;
+  const payload = {
+    nom: form.nom,
+    prenom: form.prenom,
+    email: form.email,
+    contact: form.contact,
+    poste: form.poste,
+  };
+
+  try {
+    const response = await AuthentificationService.updateUserInfo(id, payload);
+    const updated = response?.data?.data || payload;
+    persistUser({
+      nom: updated.nom ?? payload.nom,
+      prenom: updated.prenom ?? payload.prenom,
+      email: updated.email ?? payload.email,
+      contact: updated.contact ?? payload.contact,
+      poste: updated.poste ?? payload.poste,
+    });
+    fillForm(user.value);
+    toast.success("Profil mis à jour avec succès.");
+  } catch (error) {
+    const data = error?.response?.data;
+    if (data?.errors) {
+      Object.entries(data.errors).forEach(([key, value]) => {
+        errors[key] = Array.isArray(value) ? value[0] : value;
+      });
+    }
+    toast.error(serverMessage(error, "Impossible de mettre à jour le profil."));
+  } finally {
+    savingInfo.value = false;
+  }
+};
+
+const handleFileUpload = (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    toast.error("L'image ne doit pas dépasser 2 Mo.");
+    event.target.value = "";
+    return;
+  }
+  selectedFile.value = file;
+  previewUrl.value = URL.createObjectURL(file);
+};
+
+const savePhoto = async () => {
+  if (!selectedFile.value || savingPhoto.value) return;
+
+  savingPhoto.value = true;
+  const data = new FormData();
+  data.append("photo", selectedFile.value);
+
+  try {
+    const response = await AuthentificationService.changeProfil(data);
+    const path = response?.data?.data?.profil ?? response?.data?.profil;
+    if (path) {
+      persistUser({ profil: path });
+      photoUrl.value = buildPhotoUrl(path);
+    }
+    previewUrl.value = "";
+    selectedFile.value = null;
+    if (fileInput.value) fileInput.value.value = "";
+    toast.success("Photo de profil mise à jour.");
+  } catch (error) {
+    toast.error(serverMessage(error, "Impossible de mettre à jour la photo."));
+  } finally {
+    savingPhoto.value = false;
+  }
+};
 </script>
-<style scoped>
-#upload-photo {
-  opacity: 0;
-  position: absolute;
-  z-index: -1;
-}
-</style>

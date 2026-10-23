@@ -407,7 +407,7 @@ export default {
       </div>
     </div>
   </Notification>
-  <h2 class="intro-y text-lg font-medium mt-10">Programme</h2>
+  <h2 class="intro-y text-lg font-medium mt-10">Programmes</h2>
   <div class="grid grid-cols-12 gap-6 mt-5">
     <div class="col-span-12 flex justify-between items-center">
       <div class="w-full sm:w-auto my-3 sm:mt-0 sm:ml-auto md:ml-0">

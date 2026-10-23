@@ -5,7 +5,7 @@ export const useSimpleMenuStore = defineStore("simpleMenu", {
         menu: [{
                 icon: "ListIcon",
                 pageName: "programme",
-                title: "Programme",
+                title: "Programmes",
             },
             {
                 icon: "UnlockIcon",

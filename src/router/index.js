@@ -6,7 +6,9 @@ import Activation from "../views/activation/Main.vue";
 // Both
 
 //Paga utilisé
+import Dashboard from "../views/dashboard/accueil.vue";
 import Utilisateur from "../views/dashboard/utilisateur.vue";
+import Profil from "../views/dashboard/profil.vue";
 import RequestPassword from "../views/request-password/Main.vue";
 
 import Roles from "../views/dashboard/roles.vue";
@@ -16,6 +18,7 @@ import NewPassword from "../views/reset-password/_mails/newPassword.vue";
 import ResetPasswordFromDashboard from "../views/dashboard/resetPasswordFromDashboard.vue";
 
 import programme from "../views/gfa/programme/index.vue";
+import clients from "../views/gfa/clients/index.vue";
 import unite_gestion from "../views/gfa/unite-gestion/index.vue";
 import ResetPasswordConnect from "../views/reset_password/Main.vue";
 
@@ -25,32 +28,59 @@ const routes = [
     path: "/dashboard",
     component: SideMenu,
     name: "dashboard",
+    meta: { title: "Tableau de bord" },
     children: [
       {
-        path: "programme",
-        name: "programme",
-        component: programme,
+        path: "",
+        name: "Dashboard",
+        component: Dashboard,
+        meta: { title: "Tableau de bord" },
       },
       {
-        path: "unite-gestion",
+        path: "programmes",
+        name: "programme",
+        component: programme,
+        meta: { title: "Programmes" },
+      },
+      {
+        path: "clients",
+        name: "Clients",
+        component: clients,
+        meta: { title: "Clients" },
+      },
+      {
+        path: "unites-de-gestion",
         name: "unite_gestion",
         component: unite_gestion,
+        meta: { title: "Unités de gestion" },
       },
       {
         path: "roles",
         name: "Roles",
         component: Roles,
+        meta: { title: "Rôles & permissions" },
       },
       {
         path: "utilisateurs",
         name: "Utilisateur",
         component: Utilisateur,
+        meta: { title: "Utilisateurs" },
       },
 
       {
-        path: "resetPassword",
+        path: "profil",
+        name: "Profil",
+        component: Profil,
+        meta: { title: "Mon profil" },
+      },
+      {
+        path: "profil/reset-password",
         name: "ResetPasswordFromDashboard",
         component: ResetPasswordFromDashboard,
+        meta: {
+          title: "Changer le mot de passe",
+          breadcrumb: [{ label: "Mon profil", to: "/dashboard/profil" }],
+        },
       },
     ],
   },
@@ -115,7 +145,7 @@ router.beforeEach((to, from, next) => {
   }
   // Si authentifié et qu'on essaie d'aller sur "/", rediriger vers "/projet"
   else if (isAuthenticated && to.path === "/") {
-    next("/dashboard/projets");
+    next("/dashboard");
   }
   // Si non authentifié et qu'on essaie d'accéder à une autre page que "/", rediriger vers "/"
   else if (!isAuthenticated && to.path !== "/") {

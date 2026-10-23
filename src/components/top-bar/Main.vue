@@ -17,9 +17,19 @@
     <!-- BEGIN: Breadcrumb -->
 
     <nav aria-label="breadcrumb" class="-intro-x mr-auto hidden sm:flex">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">Application</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+      <ol class="breadcrumb breadcrumb-light">
+        <li
+          v-for="(crumb, index) in breadcrumbs"
+          :key="index"
+          class="breadcrumb-item"
+          :class="{ active: index === breadcrumbs.length - 1 }"
+          :aria-current="index === breadcrumbs.length - 1 ? 'page' : undefined"
+        >
+          <router-link v-if="crumb.to && index !== breadcrumbs.length - 1" :to="crumb.to">
+            {{ crumb.label }}
+          </router-link>
+          <span v-else>{{ crumb.label }}</span>
+        </li>
       </ol>
     </nav>
 
@@ -81,7 +91,7 @@
 
     <Dropdown class="intro-x w-8 h-8">
       <DropdownToggle tag="div" role="button" class="dropdown-toggle image-fit zoom-in">
-        <div class="flex items-center justify-center w-8 h-8 bg-blue-400 rounded-full shadow-lg cursor-pointer">
+        <div class="flex items-center justify-center w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full shadow-lg cursor-pointer">
           <img v-if="usersProfileImage" :src="usersProfileImage" alt="" />
           <span v-else class="text-sm font-bold p-2 text-white uppercase"> {{ currentUsers.initiale }} </span>
         </div>
@@ -90,8 +100,7 @@
         <DropdownContent class="bg-primary text-white">
           <DropdownHeader tag="div" class="!font-normal">
             <div class="font-medium">
-              <!-- {{  currentUsers.prenom }} -->
-              <span> {{ currentUsers.nom }} </span>
+              <span> {{ currentUsers.nom }} {{ currentUsers.prenom }} </span>
             </div>
             <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500">
               {{ currentUsers.role }}
@@ -102,7 +111,7 @@
             <span @click="gotoProfil" class="flex space-y-2 w-full" to=""> <UserIcon class="w-4 h-4 mr-2" /> Profil </span>
           </DropdownItem>
           <DropdownItem class="dropdown-item hover:bg-white/5">
-            <router-link class="flex space-y-2 w-full" to="/dashboard/resetPassword"> <LockIcon class="w-4 h-4 mr-2" /> Réinitialiser le Mot de Passe </router-link>
+            <router-link class="flex space-y-2 w-full" to="/dashboard/profil/reset-password"> <LockIcon class="w-4 h-4 mr-2" /> Réinitialiser le Mot de Passe </router-link>
           </DropdownItem>
 
           <DropdownDivider class="border-white/[0.08]" />
@@ -230,6 +239,24 @@ const hideSearchDropdown = () => {
   searchDropdown.value = false;
 };
 
+const breadcrumbs = computed(() => {
+  const title = route.meta?.title;
+  if (route.name === "Dashboard") {
+    return [{ label: title || "Tableau de bord" }];
+  }
+
+  const items = [{ label: "Tableau de bord", to: "/dashboard" }];
+  if (Array.isArray(route.meta?.breadcrumb)) {
+    items.push(...route.meta.breadcrumb);
+  }
+  if (title) {
+    items.push({ label: title });
+  } else if (route.name) {
+    items.push({ label: String(route.name) });
+  }
+  return items;
+});
+
 const store = useAuthStore();
 const currentUsers = reactive({});
 const successNotification = ref();
@@ -254,23 +281,20 @@ const loadUnreadNotifications = () => {
 
 onMounted(() => {
   loadUnreadNotifications();
-  const usersInfo = JSON.parse(localStorage.getItem("authenticateUser"));
+  const usersInfo = JSON.parse(localStorage.getItem("authenticateUser")) || {};
+  const user = usersInfo.users || usersInfo;
+  const roles = Array.isArray(user.roles) ? user.roles : Array.isArray(user.role) ? user.role : user.role ? [user.role] : [];
 
+  currentUsers.nom = user.nom || "";
+  currentUsers.prenom = user.prenom || "";
+  currentUsers.role = roles.map((role) => role.nom).filter(Boolean).join(", ") || user.type || "";
+  initiale.value = [(user.nom || "")[0], (user.prenom || "")[0]].filter(Boolean).join("").toUpperCase();
+  currentUsers.initiale = initiale.value;
 
-
-  console.log("usersInfo", usersInfo);
-
-  if (usersInfo) {
-    // usersProfileImage.value = API_BASE_URL + usersInfo.users.profil
-    // currentUsers.nom = usersInfo.profil.nom
-    currentUsers.nom = "test";
-    // currentUsers.prenom = usersInfo.users.prenom
-    //  + currentUsers.prenom[0]
-    let storeInitial = currentUsers.nom[0] + "";
-    storeInitial = storeInitial.toUpperCase();
-    currentUsers.role = usersInfo.type;
-    initiale.value = storeInitial;
-    currentUsers.initiale = initiale.value;
+  if (user.profil) {
+    usersProfileImage.value = /^https?:\/\//i.test(user.profil)
+      ? user.profil
+      : `${API_BASE_URL.replace(/\/$/, "")}/${String(user.profil).replace(/^\//, "")}`;
   }
 });
 

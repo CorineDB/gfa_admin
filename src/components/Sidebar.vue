@@ -29,7 +29,7 @@
     </div>
 
     <div v-if="programmeVisible" class="mb-1 animation px-4 flex items-center text-white cursor-pointer">
-      <router-link to="/dashboard/programme" style="width: 100%"
+      <router-link to="/dashboard/programmes" style="width: 100%"
         class="flex space-x-3 items-center px-2 py-2 z-10 relative text-white hover:font-bold transition ease-in-out duration-500 cursor-pointer">
         <span class=" ">
           <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1.3em"
@@ -45,7 +45,7 @@
     </div>
 
     <div v-if="uniteeDeGestionVisible" class="mb-1 px-4 animation flex items-center text-white cursor-pointer">
-      <router-link to="/dashboard/unite-gestion" style="width: 100%"
+      <router-link to="/dashboard/unites-de-gestion" style="width: 100%"
         class="flex space-x-3 items-center px-2 py-2 z-10 relative text-white hover:font-bold transition ease-in-out duration-500 cursor-pointer">
         <span class=" ">
           <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1.3em"

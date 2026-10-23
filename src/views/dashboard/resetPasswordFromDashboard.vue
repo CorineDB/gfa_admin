@@ -26,7 +26,7 @@
         </div>
         <div class="p-5 border-t border-slate-200/60 dark:border-darkmode-400">
           <router-link class="flex items-center text-primary font-medium" href="" to="/dashboard/profil"> <ActivityIcon class="w-4 h-4 mr-2" /> Information Personnel </router-link>
-          <router-link class="flex items-center mt-5" to="/dashboard/resetPassword"> <LockIcon class="w-4 h-4 mr-2" /> Changer de mot de passe </router-link>
+          <router-link class="flex items-center mt-5" to="/dashboard/profil/reset-password"> <LockIcon class="w-4 h-4 mr-2" /> Changer de mot de passe </router-link>
         </div>
       </div>
     </div>
